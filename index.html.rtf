@@ -1,0 +1,83 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww13820\viewh14700\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html>\
+<head>\
+  <title>Live Donations</title>\
+  <style>\
+    body \{\
+      background: black;\
+      color: white;\
+      font-family: Arial, sans-serif;\
+      font-size: 40px;\
+      overflow: hidden;\
+    \}\
+    .donation \{\
+      margin: 20px;\
+      opacity: 0;\
+      transform: translateY(20px);\
+      transition: all 0.5s ease;\
+    \}\
+    .show \{\
+      opacity: 1;\
+      transform: translateY(0);\
+    \}\
+  </style>\
+</head>\
+<body>\
+\
+<div id="feed"></div>\
+\
+<script>\
+const API_URL = "https://www.donordrive.com/api/events/6790/donations";\
+const API_KEY = "c55245b1622097c554b82ef55e96bdb33b8324cd";\
+\
+let lastDonationIds = [];\
+\
+async function fetchDonations() \{\
+  const response = await fetch(API_URL, \{\
+    headers: \{\
+      "Authorization": "Bearer " + API_KEY\
+    \}\
+  \});\
+\
+  const data = await response.json();\
+\
+  // Sort newest first\
+  const donations = data\
+    .sort((a, b) => new Date(b.createdDateUTC) - new Date(a.createdDateUTC))\
+    .slice(0, 5);\
+\
+  updateFeed(donations);\
+\}\
+\
+function updateFeed(donations) \{\
+  const feed = document.getElementById("feed");\
+  feed.innerHTML = "";\
+\
+  donations.forEach((d, index) => \{\
+    const div = document.createElement("div");\
+    div.className = "donation";\
+\
+    div.innerText = `$\{d.displayName || "Anonymous"\} \'97 $$\{d.amount\}`;\
+\
+    feed.appendChild(div);\
+\
+    setTimeout(() => div.classList.add("show"), index * 100);\
+  \});\
+\}\
+\
+// Refresh every 15 seconds\
+setInterval(fetchDonations, 15000);\
+\
+// Initial load\
+fetchDonations();\
+</script>\
+\
+</body>\
+</html>}
